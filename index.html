@@ -2,67 +2,99 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>DocSwift - Conversor de Documentos Online</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="./styles.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
-    <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
     <header>
-        <div class="logo">DocSwift</div>
+        <div class="logo">
+            <i class="fas fa-bolt" style="margin-right: 8px;"></i>
+            DocSwift
+        </div>
     </header>
 
     <div class="hero">
-        <h1>Converta Seus Documentos Instantaneamente</h1>
+        <h1>Converta Seus Documentos<br>Instantaneamente</h1>
         <p>PDF, DOCX, CSV e mais - Rápido, grátis e sem registro</p>
         <div class="supported-formats">
-            ✓ PDF ✓ DOCX ✓ CSV ✓ TXT ✓ JSON ✓ HTML
+            <span>✓ PDF</span>
+            <span>✓ DOCX</span>
+            <span>✓ CSV</span>
+            <span>✓ TXT</span>
+            <span>✓ JSON</span>
+            <span>✓ HTML</span>
+            <span>✓ XLSX</span>
         </div>
     </div>
 
     <div class="container">
         <div class="upload-section">
             <div class="upload-area" id="uploadArea">
-                <div class="upload-icon">📁</div>
+                <div class="upload-icon">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                </div>
                 <div class="upload-text">Clique ou arraste seu arquivo aqui</div>
-                <div class="upload-hint">Suporta PDF, DOCX, CSV, TXT, JSON, HTML</div>
+                <div class="upload-hint">Suporta PDF, DOCX, CSV, TXT, JSON, HTML, XLSX</div>
                 <input type="file" id="fileInput" accept=".pdf,.docx,.csv,.txt,.json,.html,.xlsx,.xls">
             </div>
 
             <div class="file-info" id="fileInfo">
-                <div class="file-name" id="fileName"></div>
+                <div class="file-name" id="fileName">
+                    <i class="fas fa-file-alt"></i> <span></span>
+                </div>
                 <div class="file-size" id="fileSize"></div>
             </div>
 
             <div class="conversion-options" id="conversionOptions">
-                <label class="format-label">Converter para:</label>
+                <label class="format-label">
+                    <i class="fas fa-exchange-alt"></i> Converter para:
+                </label>
                 <div class="format-buttons" id="formatButtons"></div>
             </div>
 
             <div class="loading" id="loading">
                 <div class="spinner"></div>
-                <div>Processando seu arquivo...</div>
+                <div>
+                    <i class="fas fa-sync-alt fa-spin"></i> Processando seu arquivo...
+                </div>
+                <div style="font-size: 0.85rem; margin-top: 0.5rem; color: #64748b;">
+                    Aguarde, a conversão pode levar alguns segundos
+                </div>
             </div>
         </div>
 
         <div class="result-section" id="resultSection">
-            <h2 class="result-title">✓ Conversão Concluída!</h2>
+            <h2 class="result-title">Conversão Concluída!</h2>
             <div class="action-buttons">
-                <button class="btn btn-secondary" id="viewBtn">👁️ Visualizar</button>
-                <button class="btn btn-primary" id="downloadBtn">⬇️ Download</button>
+                <button class="btn btn-secondary" id="viewBtn">
+                    <i class="fas fa-eye"></i> Visualizar
+                </button>
+                <button class="btn btn-primary" id="downloadBtn">
+                    <i class="fas fa-download"></i> Baixar Arquivo
+                </button>
             </div>
             <div class="preview-area" id="previewArea" style="display: none;"></div>
         </div>
     </div>
 
     <footer>
-        <div class="footer-text">© 2024 DocSwift - Todos os direitos reservados</div>
-        <div class="footer-dev">Desenvolvido por Guiman System</div>
+        <div class="footer-text">
+            <i class="fas fa-copyright"></i> 2024 DocSwift - Conversor de Documentos Online
+        </div>
+        <div class="footer-dev">
+            Desenvolvido com <i class="fas fa-heart" style="color: #ff6b6b;"></i> por Guiman System
+        </div>
     </footer>
-<script src="./scripts.js"></script>
+
+    <script src="./scripts.js"></script>
 </body>
 </html>
