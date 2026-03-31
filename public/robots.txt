@@ -1,0 +1,18 @@
+# Robôs permitidos
+User-agent: *
+Allow: /
+
+# Desabilitar crawling em páginas desnecessárias
+Disallow: /api/
+Disallow: /status/
+Disallow: /download/
+Disallow: /cleanup/
+
+# Tempo de atualização
+Crawl-delay: 10
+
+# Sitemap
+Sitemap: https://docswift.guimansystem.com.br/sitemap.xml
+
+# Host (opcional)
+Host: https://docswift.guimansystem.com.br

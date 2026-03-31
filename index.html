@@ -1,22 +1,83 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <meta name="description" content="DocSwift - Conversor de documentos online gratuito. Converta PDF, DOCX, CSV, TXT e mais formatos rapidamente sem registro.">
-    <meta name="keywords" content="conversor de documentos, pdf para word, converter pdf, docx para pdf">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- SEO Básico -->
+    <title>DocSwift - Conversor de Documentos Online | PDF para Word Grátis</title>
+    <meta name="description"
+        content="Converta PDF para Word, DOCX, TXT e HTML online gratuitamente. Rápido, seguro e sem registro. Ferramenta profissional de conversão de documentos.">
+    <meta name="keywords"
+        content="conversor de documentos, pdf para word, converter pdf, docx para pdf, conversor online, documentos, pdf para txt">
     <meta name="author" content="Guiman System">
-    <title>DocSwift - Conversor de Documentos Online</title>
+    <meta name="robots" content="index, follow">
+    <meta name="googlebot" content="index, follow">
+    <meta name="language" content="Portuguese">
+    <meta name="revisit-after" content="7 days">
+
+    <!-- Canonical URL (evita conteúdo duplicado) -->
+    <link rel="canonical" href="https://docswift.guimansystem.com.br/">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://docswift.guimansystem.com.br/">
+    <meta property="og:title" content="DocSwift - Conversor de Documentos Online">
+    <meta property="og:description" content="Converta PDF, DOCX, TXT e HTML gratuitamente. Ferramenta rápida e segura.">
+    <meta property="og:image" content="https://docswift.guimansystem.com.br/og-image.png">
+    <meta property="og:site_name" content="DocSwift">
+    <meta property="og:locale" content="pt_BR">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://docswift.guimansystem.com.br/">
+    <meta name="twitter:title" content="DocSwift - Conversor de Documentos Online">
+    <meta name="twitter:description"
+        content="Converta seus documentos gratuitamente. Suporte para PDF, DOCX, TXT e mais.">
+    <meta name="twitter:image" content="https://docswift.guimansystem.com.br/og-image.png">
+
+    <meta name="google-site-verification" content="SEU_CODIGO_AQUI">
+
+    <!-- REMOVA ESTA LINHA: <title>DocSwift - Conversor de Documentos Online</title> -->
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "DocSwift",
+        "description": "Conversor de documentos online gratuito que converte PDF, DOCX, TXT e HTML.",
+        "url": "https://docswift.guimansystem.com.br",
+        "applicationCategory": "Utility",
+        "operatingSystem": "All",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "BRL"
+        },
+        "author": {
+            "@type": "Organization",
+            "name": "Guiman System"
+        }
+    }
+    </script>
+
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 </head>
+
 <body>
     <!-- Header -->
     <header class="header">
@@ -136,7 +197,7 @@
                     <h2>Converta Seus Arquivos</h2>
                     <p>Selecione um arquivo e escolha o formato desejado</p>
                 </div>
-                
+
                 <div class="converter-card">
                     <div class="upload-area" id="uploadArea">
                         <div class="upload-icon">
@@ -285,7 +346,8 @@
                             <i class="fas fa-chevron-down"></i>
                         </div>
                         <div class="faq-answer">
-                            <p>Não. Seus arquivos são excluídos automaticamente após a conversão, garantindo sua privacidade.</p>
+                            <p>Não. Seus arquivos são excluídos automaticamente após a conversão, garantindo sua
+                                privacidade.</p>
                         </div>
                     </div>
                     <div class="faq-item">
@@ -358,4 +420,5 @@
 
     <script src="scripts.js"></script>
 </body>
+
 </html>
