@@ -139,20 +139,29 @@ async function sendToBackend(file, format) {
 // CONVERSÃO
 // =======================
 async function convertFile(targetFormat) {
-    if (!currentFile) return;
-
     loading.classList.add('active');
     resultSection.classList.remove('active');
 
     try {
-        const baseName = currentFile.name.replace(/\.[^/.]+$/, '');
+        const formData = new FormData();
+        formData.append("file", currentFile);
+        formData.append("format", targetFormat);
 
-        // chama backend
-        convertedBlob = await sendToBackend(currentFile, targetFormat);
+        // 1. envia pra conversão
+        const res = await fetch("https://backend-docswift.onrender.com/convert", {
+            method: "POST",
+            body: formData
+        });
 
-        convertedFileName = `${baseName}.${targetFormat}`;
+        const data = await res.json();
 
-        showResult();
+        if (!data.id) {
+            throw new Error("Erro ao iniciar conversão");
+        }
+
+        // 2. aguarda processamento
+        await waitForProcessing(data.id, targetFormat);
+
     } catch (error) {
         alert('Erro na conversão: ' + error.message);
     } finally {
@@ -167,6 +176,34 @@ function showResult() {
     resultSection.classList.add('active');
     previewArea.style.display = 'none';
 }
+
+
+async function waitForProcessing(id, format) {
+    let attempts = 0;
+
+    while (attempts < 30) {
+        const res = await fetch(`https://backend-docswift.onrender.com/status/${id}`);
+        const data = await res.json();
+
+        if (data.status === "done") {
+            const downloadUrl = "https://backend-docswift.onrender.com" + data.download;
+
+            const fileRes = await fetch(downloadUrl);
+            convertedBlob = await fileRes.blob();
+
+            convertedFileName = `arquivo.${format}`;
+
+            showResult();
+            return;
+        }
+
+        await new Promise(r => setTimeout(r, 2000));
+        attempts++;
+    }
+
+    throw new Error("Arquivo não ficou pronto a tempo");
+}
+
 
 // =======================
 // VISUALIZAR
