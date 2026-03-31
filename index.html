@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DocSwift - Conversor de Documentos Online</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+    <header>
+        <div class="logo">DocSwift</div>
+    </header>
+
+    <div class="hero">
+        <h1>Converta Seus Documentos Instantaneamente</h1>
+        <p>PDF, DOCX, CSV e mais - Rápido, grátis e sem registro</p>
+        <div class="supported-formats">
+            ✓ PDF ✓ DOCX ✓ CSV ✓ TXT ✓ JSON ✓ HTML
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="upload-section">
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">📁</div>
+                <div class="upload-text">Clique ou arraste seu arquivo aqui</div>
+                <div class="upload-hint">Suporta PDF, DOCX, CSV, TXT, JSON, HTML</div>
+                <input type="file" id="fileInput" accept=".pdf,.docx,.csv,.txt,.json,.html,.xlsx,.xls">
+            </div>
+
+            <div class="file-info" id="fileInfo">
+                <div class="file-name" id="fileName"></div>
+                <div class="file-size" id="fileSize"></div>
+            </div>
+
+            <div class="conversion-options" id="conversionOptions">
+                <label class="format-label">Converter para:</label>
+                <div class="format-buttons" id="formatButtons"></div>
+            </div>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <div>Processando seu arquivo...</div>
+            </div>
+        </div>
+
+        <div class="result-section" id="resultSection">
+            <h2 class="result-title">✓ Conversão Concluída!</h2>
+            <div class="action-buttons">
+                <button class="btn btn-secondary" id="viewBtn">👁️ Visualizar</button>
+                <button class="btn btn-primary" id="downloadBtn">⬇️ Download</button>
+            </div>
+            <div class="preview-area" id="previewArea" style="display: none;"></div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-text">© 2024 DocSwift - Todos os direitos reservados</div>
+        <div class="footer-dev">Desenvolvido por Guiman System</div>
+    </footer>
+<script src="./scripts.js"></script>
+</body>
+</html>
