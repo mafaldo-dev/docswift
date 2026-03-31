@@ -872,3 +872,48 @@ input[type="file"] {
         font-size: 0.75rem;
     }
 }
+
+/* Estilos para preview */
+.preview-text {
+    background: var(--gray-50);
+    padding: 1rem;
+    border-radius: var(--radius);
+    font-family: 'Courier New', monospace;
+    font-size: 0.75rem;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-x: auto;
+    max-height: 400px;
+}
+
+.preview-json {
+    background: var(--gray-50);
+    padding: 1rem;
+    border-radius: var(--radius);
+    font-family: 'Courier New', monospace;
+    font-size: 0.75rem;
+    white-space: pre-wrap;
+    color: #2d3748;
+}
+
+.loading-preview {
+    text-align: center;
+    padding: 2rem;
+    color: var(--gray-500);
+}
+
+/* Melhorias no resultado */
+.result-section {
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
