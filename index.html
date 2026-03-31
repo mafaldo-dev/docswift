@@ -3,98 +3,359 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="description" content="DocSwift - Conversor de documentos online gratuito. Converta PDF, DOCX, CSV, TXT e mais formatos rapidamente sem registro.">
+    <meta name="keywords" content="conversor de documentos, pdf para word, converter pdf, docx para pdf">
+    <meta name="author" content="Guiman System">
     <title>DocSwift - Conversor de Documentos Online</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="./styles.css">
+    <link rel="stylesheet" href="styles.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
-    <header>
-        <div class="logo">
-            <i class="fas fa-bolt" style="margin-right: 8px;"></i>
-            DocSwift
-        </div>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav-container">
+            <div class="logo">
+                <i class="fas fa-bolt"></i>
+                <span>DocSwift</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#home" class="nav-link active">Início</a></li>
+                <li><a href="#features" class="nav-link">Recursos</a></li>
+                <li><a href="#formats" class="nav-link">Formatos</a></li>
+                <li><a href="#about" class="nav-link">Sobre</a></li>
+            </ul>
+            <div class="nav-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+        </nav>
     </header>
 
-    <div class="hero">
-        <h1>Converta Seus Documentos<br>Instantaneamente</h1>
-        <p>PDF, DOCX, CSV e mais - Rápido, grátis e sem registro</p>
-        <div class="supported-formats">
-            <span>✓ PDF</span>
-            <span>✓ DOCX</span>
-            <span>✓ CSV</span>
-            <span>✓ TXT</span>
-            <span>✓ JSON</span>
-            <span>✓ HTML</span>
-            <span>✓ XLSX</span>
-        </div>
-    </div>
-
-    <div class="container">
-        <div class="upload-section">
-            <div class="upload-area" id="uploadArea">
-                <div class="upload-icon">
-                    <i class="fas fa-cloud-upload-alt"></i>
+    <main>
+        <!-- Hero Section -->
+        <section class="hero" id="home">
+            <div class="hero-content">
+                <h1>Converta Seus Documentos<br><span class="highlight">Instantaneamente</span></h1>
+                <p>Transforme seus arquivos entre PDF, DOCX, CSV, TXT e mais. Rápido, seguro e totalmente gratuito.</p>
+                <div class="hero-buttons">
+                    <button class="btn btn-primary" id="scrollToConverter">
+                        <i class="fas fa-arrow-down"></i> Começar Agora
+                    </button>
+                    <a href="#features" class="btn btn-outline">
+                        <i class="fas fa-info-circle"></i> Saiba Mais
+                    </a>
                 </div>
-                <div class="upload-text">Clique ou arraste seu arquivo aqui</div>
-                <div class="upload-hint">Suporta PDF, DOCX, CSV, TXT, JSON, HTML, XLSX</div>
-                <input type="file" id="fileInput" accept=".pdf,.docx,.csv,.txt,.json,.html,.xlsx,.xls">
-            </div>
-
-            <div class="file-info" id="fileInfo">
-                <div class="file-name" id="fileName">
-                    <i class="fas fa-file-alt"></i> <span></span>
-                </div>
-                <div class="file-size" id="fileSize"></div>
-            </div>
-
-            <div class="conversion-options" id="conversionOptions">
-                <label class="format-label">
-                    <i class="fas fa-exchange-alt"></i> Converter para:
-                </label>
-                <div class="format-buttons" id="formatButtons"></div>
-            </div>
-
-            <div class="loading" id="loading">
-                <div class="spinner"></div>
-                <div>
-                    <i class="fas fa-sync-alt fa-spin"></i> Processando seu arquivo...
-                </div>
-                <div style="font-size: 0.85rem; margin-top: 0.5rem; color: #64748b;">
-                    Aguarde, a conversão pode levar alguns segundos
+                <div class="hero-stats">
+                    <div class="stat">
+                        <span class="stat-number">10+</span>
+                        <span class="stat-label">Formatos</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">100%</span>
+                        <span class="stat-label">Gratuito</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">Seguro</span>
+                        <span class="stat-label">e Privado</span>
+                    </div>
                 </div>
             </div>
-        </div>
-
-        <div class="result-section" id="resultSection">
-            <h2 class="result-title">Conversão Concluída!</h2>
-            <div class="action-buttons">
-                <button class="btn btn-secondary" id="viewBtn">
-                    <i class="fas fa-eye"></i> Visualizar
-                </button>
-                <button class="btn btn-primary" id="downloadBtn">
-                    <i class="fas fa-download"></i> Baixar Arquivo
-                </button>
+            <div class="hero-image">
+                <i class="fas fa-file-alt"></i>
+                <i class="fas fa-arrow-right"></i>
+                <i class="fas fa-file-word"></i>
             </div>
-            <div class="preview-area" id="previewArea" style="display: none;"></div>
-        </div>
-    </div>
+        </section>
 
-    <footer>
-        <div class="footer-text">
-            <i class="fas fa-copyright"></i> 2024 DocSwift - Conversor de Documentos Online
+        <!-- Features Section -->
+        <section class="features" id="features">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-tag">Recursos</span>
+                    <h2>Por que escolher o DocSwift?</h2>
+                    <p>Uma ferramenta completa para todas as suas necessidades de conversão</p>
+                </div>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <h3>Conversão Rápida</h3>
+                        <p>Processamento otimizado para resultados em segundos, sem filas de espera.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <h3>Segurança Garantida</h3>
+                        <p>Seus arquivos são processados de forma segura e excluídos após a conversão.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-infinity"></i>
+                        </div>
+                        <h3>Sem Limites</h3>
+                        <p>Converta quantos arquivos quiser, sem registro ou restrições de uso.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <h3>Compatível</h3>
+                        <p>Funciona em qualquer dispositivo, desktop ou mobile, sem instalação.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h3>Alta Qualidade</h3>
+                        <p>Preserva a formatação original dos seus documentos na conversão.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-headset"></i>
+                        </div>
+                        <h3>Suporte Gratuito</h3>
+                        <p>Equipe pronta para ajudar com qualquer dúvida ou problema.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Converter Section -->
+        <section class="converter" id="converter">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-tag">Conversor</span>
+                    <h2>Converta Seus Arquivos</h2>
+                    <p>Selecione um arquivo e escolha o formato desejado</p>
+                </div>
+                
+                <div class="converter-card">
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-icon">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <div class="upload-text">Clique ou arraste seu arquivo aqui</div>
+                        <div class="upload-hint">Suporta PDF, DOCX, CSV, TXT, JSON, HTML, XLSX</div>
+                        <input type="file" id="fileInput" accept=".pdf,.docx,.csv,.txt,.json,.html,.xlsx,.xls">
+                    </div>
+
+                    <div class="file-info" id="fileInfo">
+                        <div class="file-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div class="file-details">
+                            <div class="file-name" id="fileName"></div>
+                            <div class="file-size" id="fileSize"></div>
+                        </div>
+                        <button class="file-clear" id="clearFile">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+
+                    <div class="conversion-options" id="conversionOptions">
+                        <label class="format-label">
+                            <i class="fas fa-exchange-alt"></i> Converter para:
+                        </label>
+                        <div class="format-buttons" id="formatButtons"></div>
+                    </div>
+
+                    <div class="loading" id="loading">
+                        <div class="spinner"></div>
+                        <div class="loading-text">
+                            <i class="fas fa-sync-alt fa-spin"></i> Processando seu arquivo...
+                        </div>
+                        <div class="loading-sub">A conversão pode levar alguns segundos</div>
+                    </div>
+
+                    <div class="result-section" id="resultSection">
+                        <div class="result-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <h3 class="result-title">Conversão Concluída!</h3>
+                        <div class="action-buttons">
+                            <button class="btn btn-secondary" id="viewBtn">
+                                <i class="fas fa-eye"></i> Visualizar
+                            </button>
+                            <button class="btn btn-primary" id="downloadBtn">
+                                <i class="fas fa-download"></i> Baixar Arquivo
+                            </button>
+                        </div>
+                        <div class="preview-area" id="previewArea" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Formats Section -->
+        <section class="formats" id="formats">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-tag">Formatos</span>
+                    <h2>Formatos Suportados</h2>
+                    <p>Converta entre diversos formatos de documentos</p>
+                </div>
+                <div class="formats-grid">
+                    <div class="format-card">
+                        <i class="fas fa-file-pdf"></i>
+                        <span>PDF</span>
+                        <div class="format-badges">
+                            <span class="badge">→ DOCX</span>
+                            <span class="badge">→ TXT</span>
+                            <span class="badge">→ HTML</span>
+                        </div>
+                    </div>
+                    <div class="format-card">
+                        <i class="fas fa-file-word"></i>
+                        <span>DOCX</span>
+                        <div class="format-badges">
+                            <span class="badge">→ PDF</span>
+                            <span class="badge">→ TXT</span>
+                            <span class="badge">→ HTML</span>
+                        </div>
+                    </div>
+                    <div class="format-card">
+                        <i class="fas fa-file-alt"></i>
+                        <span>TXT</span>
+                        <div class="format-badges">
+                            <span class="badge">→ PDF</span>
+                            <span class="badge">→ DOCX</span>
+                            <span class="badge">→ HTML</span>
+                        </div>
+                    </div>
+                    <div class="format-card">
+                        <i class="fas fa-table"></i>
+                        <span>CSV</span>
+                        <div class="format-badges">
+                            <span class="badge">→ JSON</span>
+                            <span class="badge">→ XLSX</span>
+                            <span class="badge">→ HTML</span>
+                        </div>
+                    </div>
+                    <div class="format-card">
+                        <i class="fas fa-file-code"></i>
+                        <span>JSON</span>
+                        <div class="format-badges">
+                            <span class="badge">→ CSV</span>
+                            <span class="badge">→ TXT</span>
+                            <span class="badge">→ HTML</span>
+                        </div>
+                    </div>
+                    <div class="format-card">
+                        <i class="fas fa-file-excel"></i>
+                        <span>XLSX</span>
+                        <div class="format-badges">
+                            <span class="badge">→ CSV</span>
+                            <span class="badge">→ JSON</span>
+                            <span class="badge">→ HTML</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="faq" id="about">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-tag">Dúvidas</span>
+                    <h2>Perguntas Frequentes</h2>
+                    <p>Tire suas dúvidas sobre o conversor</p>
+                </div>
+                <div class="faq-grid">
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h3>O serviço é realmente gratuito?</h3>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Sim! O DocSwift é completamente gratuito, sem limites de conversões por dia.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h3>Meus arquivos ficam armazenados?</h3>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Não. Seus arquivos são excluídos automaticamente após a conversão, garantindo sua privacidade.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h3>Qual o tamanho máximo do arquivo?</h3>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Arquivos de até 50MB são suportados para conversão.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h3>Preciso criar uma conta?</h3>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Não! O DocSwift não requer cadastro. Basta fazer upload e converter.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <div class="footer-logo">
+                    <i class="fas fa-bolt"></i>
+                    <span>DocSwift</span>
+                </div>
+                <p>Conversor de documentos online rápido, seguro e gratuito.</p>
+                <div class="footer-social">
+                    <a href="#"><i class="fab fa-github"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h4>Produto</h4>
+                <ul>
+                    <li><a href="#features">Recursos</a></li>
+                    <li><a href="#formats">Formatos</a></li>
+                    <li><a href="#about">Sobre</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Suporte</h4>
+                <ul>
+                    <li><a href="#">FAQ</a></li>
+                    <li><a href="#">Contato</a></li>
+                    <li><a href="#">Política de Privacidade</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Contato</h4>
+                <ul>
+                    <li><i class="fas fa-envelope"></i> suporte@docswift.com</li>
+                    <li><i class="fas fa-clock"></i> 24/7 Online</li>
+                </ul>
+            </div>
         </div>
-        <div class="footer-dev">
-            Desenvolvido com <i class="fas fa-heart" style="color: #ff6b6b;"></i> por Guiman System
+        <div class="footer-bottom">
+            <p>&copy; 2026 DocSwift - Todos os direitos reservados</p>
+            <p class="footer-dev">Desenvolvido com <i class="fas fa-heart"></i> por Guiman System</p>
         </div>
     </footer>
 
-    <script src="./scripts.js"></script>
+    <script src="scripts.js"></script>
 </body>
 </html>
