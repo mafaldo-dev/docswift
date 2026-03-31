@@ -115,7 +115,7 @@ async function sendToBackend(file, format) {
     let attempts = 0;
     let blob = null;
 
-    while (attempts < 10) {
+    while (attempts < 40) {
         const downloadRes = await fetch(downloadUrl);
 
         if (downloadRes.ok) {
@@ -124,7 +124,7 @@ async function sendToBackend(file, format) {
         }
 
         // espera 1 segundo antes de tentar de novo
-        await new Promise(r => setTimeout(r, 1000));
+        await new Promise(r => setTimeout(r, 3000));
         attempts++;
     }
 
