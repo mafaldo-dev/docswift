@@ -1,6 +1,7 @@
 {
     "version": 2,
     "name": "docswift",
+    "public": true,
     "builds": [
         {
             "src": "*.html",
