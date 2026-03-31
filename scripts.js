@@ -180,30 +180,62 @@ function showResult() {
 
 async function waitForProcessing(id, format) {
     let attempts = 0;
+    const maxAttempts = 40;
 
-    while (attempts < 30) {
-        const res = await fetch(`https://backend-docswift.onrender.com/status/${id}`);
-        const data = await res.json();
+    while (attempts < maxAttempts) {
+        try {
+            // FORÇA SEM CACHE
+            const res = await fetch(`https://backend-docswift.onrender.com/status/${id}?_=${Date.now()}`, {
+                method: 'GET',
+                cache: 'no-store',
+                headers: {
+                    'Cache-Control': 'no-cache, no-store, must-revalidate'
+                }
+            });
+            
+            const data = await res.json();
+            
+            console.log(`Status check (${attempts + 1}/${maxAttempts}):`, data);
 
-        if (data.status === "done") {
-            const downloadUrl = "https://backend-docswift.onrender.com" + data.download;
+            // Verifica se deu erro
+            if (data.status === 'error') {
+                throw new Error(data.error || 'Erro na conversão');
+            }
 
-            const fileRes = await fetch(downloadUrl);
-            convertedBlob = await fileRes.blob();
+            // Verifica se terminou
+            if (data.status === 'done') {
+                if (!data.download || data.download === '/download/null') {
+                    throw new Error('Arquivo convertido não disponível para download');
+                }
+                
+                const downloadUrl = 'https://backend-docswift.onrender.com' + data.download;
+                const fileRes = await fetch(downloadUrl, {
+                    cache: 'no-store'
+                });
+                
+                if (!fileRes.ok) {
+                    throw new Error(`Falha no download: ${fileRes.status}`);
+                }
+                
+                convertedBlob = await fileRes.blob();
+                convertedFileName = `arquivo_convertido.${format}`;
+                
+                showResult();
+                return;
+            }
 
-            convertedFileName = `arquivo.${format}`;
-
-            showResult();
-            return;
+            // Ainda processando
+            await new Promise(r => setTimeout(r, 2000));
+            attempts++;
+            
+        } catch (error) {
+            console.error('Erro no polling:', error);
+            throw error;
         }
-
-        await new Promise(r => setTimeout(r, 2000));
-        attempts++;
     }
 
-    throw new Error("Arquivo não ficou pronto a tempo");
+    throw new Error('Tempo limite excedido - arquivo não ficou pronto a tempo');
 }
-
 
 // =======================
 // VISUALIZAR
