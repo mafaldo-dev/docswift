@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>DocSwift Admin</title>
+    <link rel="stylesheet" href="admin.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>Dashboard Admin</h1>
+
+        <div class="cards">
+            <div class="card">
+                <h3>Usuários</h3>
+                <span id="usuariosTotal">0</span>
+            </div>
+
+            <div class="card">
+                <h3>Plano Pro</h3>
+                <span id="usuariosPro">0</span>
+            </div>
+
+            <div class="card">
+                <h3>Conversões</h3>
+                <span id="conversoesTotal">0</span>
+            </div>
+
+            <div class="card">
+                <h3>Hoje</h3>
+                <span id="conversoesHoje">0</span>
+            </div>
+        </div>
+
+        <h2>Usuários</h2>
+
+        <table id="usersTable">
+            <thead>
+                <tr>
+                    <th>Email</th>
+                    <th>Plano</th>
+                    <th>Cadastro</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+        <h2>Conversões</h2>
+
+        <table id="jobsTable">
+            <thead>
+                <tr>
+                    <th>Usuário</th>
+                    <th>Arquivo</th>
+                    <th>Entrada</th>
+                    <th>Saída</th>
+                    <th>Tamanho</th>
+                    <th>Data</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+    </div>
+
+    <script src="admin.js"></script>
+
+</body>
+
+</html>
