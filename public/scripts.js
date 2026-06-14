@@ -174,6 +174,7 @@ async function doLogin() {
     setToken(data.token);
     setUser(data.user);
     closeModal('authModal');
+    window.location.href = 'dashboard.html';
     renderUserArea();
   } catch (e) {
     errEl.textContent = 'Erro de conexão.';
@@ -199,6 +200,7 @@ async function doRegister() {
     setToken(data.token);
     setUser(data.user);
     closeModal('authModal');
+    window.location.href = 'dashboard.html';
     renderUserArea();
   } catch (e) {
     errEl.textContent = 'Erro de conexão.';
@@ -260,7 +262,17 @@ async function iniciarPagamento() {
 // ─────────────────────────────────────────────
 // UPLOAD
 // ─────────────────────────────────────────────
-uploadArea.addEventListener('click', () => fileInput.click());
+uploadArea.addEventListener('click', () => {
+  const token = getToken();
+
+  if (!token) {
+    openAuthModal('login');
+    return;
+  }
+
+  fileInput.click();
+});
+
 fileInput.addEventListener('change', handleFileSelect);
 
 uploadArea.addEventListener('dragover', (e) => {
@@ -268,10 +280,20 @@ uploadArea.addEventListener('dragover', (e) => {
   uploadArea.classList.add('drag-over');
 });
 uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('drag-over'));
+
+// DROP ALTERADA TESTE
 uploadArea.addEventListener('drop', (e) => {
   e.preventDefault();
   uploadArea.classList.remove('drag-over');
-  if (e.dataTransfer.files.length > 0) handleFile(e.dataTransfer.files[0]);
+
+  if (!getToken()) {
+    openAuthModal('login');
+    return;
+  }
+
+  if (e.dataTransfer.files.length > 0) {
+    handleFile(e.dataTransfer.files[0]);
+  }
 });
 
 if (clearFile) {
