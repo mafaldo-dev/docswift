@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="admin.css">
 </head>
 <body>
-    <!-- Tela de Login -->
     <div id="loginScreen" class="login-container">
         <div class="login-box">
             <h2>🔐 DocSwift Admin</h2>
@@ -29,7 +28,6 @@
         </div>
     </div>
 
-    <!-- Painel Administrativo -->
     <div id="adminPanel" class="admin-panel">
         <div class="container">
             <header class="topbar">
@@ -64,42 +62,56 @@
             </section>
 
             <section class="panel">
-                <h2>👤 Usuários Cadastrados</h2>
-                <table id="usersTable">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Email</th>
-                            <th>Plano</th>
-                            <th>Cadastro</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2>👤 Usuários Cadastrados</h2>
+                    <button class="refresh-btn" onclick="loadUsers()">🔄 Atualizar</button>
+                </div>
+                <div class="table-wrapper">
+                    <table id="usersTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Email</th>
+                                <th>Plano</th>
+                                <th>Data de Cadastro</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td colspan="4" class="loading">Carregando usuários...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </section>
 
             <section class="panel">
-                <h2>📁 Conversões Recentes</h2>
-                <table id="jobsTable">
-                    <thead>
-                        <tr>
-                            <th>Usuário</th>
-                            <th>Arquivo</th>
-                            <th>Entrada</th>
-                            <th>Saída</th>
-                            <th>Original</th>
-                            <th>Final</th>
-                            <th>IP</th>
-                            <th>Status</th>
-                            <th>Data</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2>📁 Conversões Recentes</h2>
+                    <button class="refresh-btn" onclick="loadJobs()">🔄 Atualizar</button>
+                </div>
+                <div class="table-wrapper">
+                    <table id="jobsTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Usuário</th>
+                                <th>Arquivo</th>
+                                <th>Entrada</th>
+                                <th>Saída</th>
+                                <th>Tamanho Original</th>
+                                <th>Status</th>
+                                <th>IP</th>
+                                <th>Data</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td colspan="9" class="loading">Carregando conversões...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </section>
         </div>
     </div>
 
-  <script src="admin.js"></script>
+    <script src="admin.js"></script>
 </body>
 </html>

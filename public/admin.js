@@ -1,14 +1,39 @@
 
 const API_URL = "https://backend-docswift.onrender.com";
 
-// Função para fazer login
+// Guarda as credenciais após o login
+let adminEmail = null;
+let adminPassword = null;
+
+// Função para fazer requisições autenticadas
+async function fetchAdmin(endpoint, options = {}) {
+    const response = await fetch(`${API_URL}${endpoint}`, {
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Admin-Email': adminEmail,
+            'X-Admin-Password': adminPassword,
+            ...options.headers
+        }
+    });
+
+    // Se não autorizado, fazer logout
+    if (response.status === 403 || response.status === 401) {
+        logoutAdmin();
+        throw new Error('Sessão expirada');
+    }
+
+    return response;
+}
+
+// Login
 async function fazerLogin() {
     const email = document.getElementById('loginEmail').value;
-    const senha = document.getElementById('loginPassword').value;
+    const password = document.getElementById('loginPassword').value;
     const errorDiv = document.getElementById('loginError');
     const loginBtn = document.querySelector('.login-btn');
 
-    if (!email || !senha) {
+    if (!email || !password) {
         errorDiv.textContent = '❌ Por favor, preencha todos os campos!';
         errorDiv.style.display = 'block';
         return;
@@ -23,23 +48,33 @@ async function fazerLogin() {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ email, senha })
+            body: JSON.stringify({
+                email: email,
+                password: password
+            })
         });
 
         const data = await response.json();
 
-        if (response.ok && data.token) {
-            localStorage.setItem('token', data.token);
+        if (response.ok && data.success === true) {
+            // Salvar credenciais para próximas requisições
+            adminEmail = email;
+            adminPassword = password;
+
             localStorage.setItem('admin_logged_in', 'true');
+            localStorage.setItem('admin_email', email);
+            localStorage.setItem('admin_password', btoa(password)); // Armazena em base64
+
             mostrarPainelAdmin();
             errorDiv.style.display = 'none';
 
-            // Carregar todos os dados
-            await loadStats();
-            await loadUsers();
-            await loadJobs();
+            await Promise.all([
+                loadStats(),
+                loadUsers(),
+                loadJobs()
+            ]);
         } else {
-            errorDiv.textContent = data.message || '❌ Email ou senha incorretos!';
+            errorDiv.textContent = data.error || '❌ Email ou senha incorretos!';
             errorDiv.style.display = 'block';
         }
     } catch (error) {
@@ -54,18 +89,19 @@ async function fazerLogin() {
 
 // Logout
 function logoutAdmin() {
-    localStorage.removeItem('token');
+    adminEmail = null;
+    adminPassword = null;
     localStorage.removeItem('admin_logged_in');
+    localStorage.removeItem('admin_email');
+    localStorage.removeItem('admin_password');
     mostrarTelaLogin();
 }
 
-// Mostrar painel admin
 function mostrarPainelAdmin() {
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('adminPanel').style.display = 'block';
 }
 
-// Mostrar tela de login
 function mostrarTelaLogin() {
     document.getElementById('loginScreen').style.display = 'flex';
     document.getElementById('adminPanel').style.display = 'none';
@@ -75,34 +111,13 @@ function mostrarTelaLogin() {
 
 // Carregar estatísticas
 async function loadStats() {
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-        console.error('Token não encontrado');
-        return;
-    }
-
     try {
-        const res = await fetch(`${API_URL}/admin/stats`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        });
-
-        if (res.status === 401) {
-            logoutAdmin();
-            return;
-        }
-
-        const data = await res.json();
+        const response = await fetchAdmin('/admin/stats');
+        const data = await response.json();
 
         document.getElementById("usuariosTotal").textContent = data.usuarios_total || 0;
         document.getElementById("usuariosPro").textContent = data.usuarios_pro || 0;
-
-        // Calcular usuários free
-        const freeUsers = (data.usuarios_total || 0) - (data.usuarios_pro || 0);
-        document.getElementById("usuariosFree").textContent = freeUsers;
-
+        document.getElementById("usuariosFree").textContent = data.usuarios_free || 0;
         document.getElementById("conversoesTotal").textContent = data.conversoes_total || 0;
         document.getElementById("conversoesHoje").textContent = data.conversoes_hoje || 0;
     } catch (error) {
@@ -112,86 +127,50 @@ async function loadStats() {
 
 // Carregar usuários
 async function loadUsers() {
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-        console.error('Token não encontrado');
-        return;
-    }
-
     const tbody = document.querySelector("#usersTable tbody");
-    tbody.innerHTML = '<tr><td colspan="3" class="loading">Carregando usuários...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="4" class="loading">Carregando usuários...</td></tr>';
 
     try {
-        const res = await fetch(`${API_URL}/admin/users`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        });
-
-        if (res.status === 401) {
-            logoutAdmin();
-            return;
-        }
-
-        const users = await res.json();
-        console.log('Usuários carregados:', users);
-        console.log('Status:', res.status);
+        const response = await fetchAdmin('/admin/users');
+        const users = await response.json();
 
         tbody.innerHTML = '';
 
         if (!users || users.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="3" style="text-align: center;">Nenhum usuário encontrado</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align: center;">Nenhum usuário encontrado</td></tr>';
             return;
         }
 
         users.forEach(user => {
             const row = tbody.insertRow();
-            const planoColor = user.plano === 'Pro' ? '#48bb78' : '#ed8936';
+            const planoColor = user.plano === 'pro' ? '#48bb78' : '#ed8936';
+            const planoTexto = user.plano === 'pro' ? 'Pro' : 'Free';
             row.innerHTML = `
+                        <td>${user.id || 'N/A'}</td>
                         <td>${user.email || 'N/A'}</td>
-                        <td><span style="color: ${planoColor}; font-weight: bold;">${user.plano || 'Free'}</span></td>
+                        <td><span style="color: ${planoColor}; font-weight: bold;">${planoTexto}</span></td>
                         <td>${user.criado_em ? new Date(user.criado_em).toLocaleString() : 'N/A'}</td>
                     `;
         });
     } catch (error) {
         console.error('Erro ao carregar usuários:', error);
-        tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: #f56565;">Erro ao carregar usuários</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #f56565;">Erro ao carregar usuários</td></tr>';
     }
 }
 
-// Carregar jobs/conversões
+// Carregar jobs
 async function loadJobs() {
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-        console.error('Token não encontrado');
-        return;
-    }
-
     const tbody = document.querySelector("#jobsTable tbody");
-    tbody.innerHTML = '<tr><td colspan="7" class="loading">Carregando conversões...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="9" class="loading">Carregando conversões...</td></tr>';
 
     try {
-        const res = await fetch(`${API_URL}/admin/jobs`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        });
-
-        if (res.status === 401) {
-            logoutAdmin();
-            return;
-        }
-
-        const jobs = await res.json();
-        console.log('Jobs carregados:', jobs);
-        console.log('Status:', res.status);
+        const response = await fetchAdmin('/admin/jobs');
+        const jobs = await response.json();
 
         tbody.innerHTML = '';
 
         if (!jobs || jobs.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Nenhuma conversão encontrada</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">Nenhuma conversão encontrada</td></tr>';
             return;
         }
 
@@ -201,56 +180,64 @@ async function loadJobs() {
                 `${(job.tamanho_original / 1024 / 1024).toFixed(2)} MB` : 'N/A';
 
             let statusClass = '';
-            if (job.status === 'Concluído') statusClass = 'status-success';
-            else if (job.status === 'Processando') statusClass = 'status-pending';
-            else if (job.status === 'Falha') statusClass = 'status-failed';
+            let statusTexto = job.status || 'pending';
+
+            if (statusTexto === 'done') {
+                statusClass = 'status-success';
+                statusTexto = 'Concluído';
+            } else if (statusTexto === 'processing') {
+                statusClass = 'status-pending';
+                statusTexto = 'Processando';
+            } else if (statusTexto === 'error') {
+                statusClass = 'status-failed';
+                statusTexto = 'Erro';
+            } else {
+                statusTexto = statusTexto;
+            }
 
             row.innerHTML = `
+                        <td>${job.id || 'N/A'}</td>
                         <td>${job.usuario || 'N/A'}</td>
                         <td>${job.arquivo || 'N/A'}</td>
                         <td>${job.entrada || 'N/A'}</td>
                         <td>${job.saida || 'N/A'}</td>
                         <td>${tamanhoFormatado}</td>
+                        <td class="${statusClass}">${statusTexto}</td>
+                        <td>${job.ip || 'N/A'}</td>
                         <td>${job.data ? new Date(job.data).toLocaleString() : 'N/A'}</td>
-                        <td class="${statusClass}">${job.status || 'Pendente'}</td>
                     `;
         });
     } catch (error) {
         console.error('Erro ao carregar jobs:', error);
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #f56565;">Erro ao carregar conversões</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; color: #f56565;">Erro ao carregar conversões</td></tr>';
     }
 }
 
-// Verificar se já está logado
+// Verificar sessão ao carregar
 async function verificarSessao() {
     const isLoggedIn = localStorage.getItem('admin_logged_in');
-    const token = localStorage.getItem('token');
+    const storedEmail = localStorage.getItem('admin_email');
+    const storedPassword = localStorage.getItem('admin_password');
 
-    if (isLoggedIn === 'true' && token) {
-        // Verificar se o token ainda é válido
+    if (isLoggedIn === 'true' && storedEmail && storedPassword) {
+        adminEmail = storedEmail;
+        adminPassword = atob(storedPassword);
+
         try {
-            const res = await fetch(`${API_URL}/admin/stats`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-
-            if (res.ok) {
-                mostrarPainelAdmin();
-                await loadStats();
-                await loadUsers();
-                await loadJobs();
-            } else {
-                logoutAdmin();
-            }
+            await fetchAdmin('/admin/stats');
+            mostrarPainelAdmin();
+            await Promise.all([
+                loadStats(),
+                loadUsers(),
+                loadJobs()
+            ]);
         } catch (error) {
-            console.error('Erro ao verificar sessão:', error);
             logoutAdmin();
         }
     }
 }
 
-// Adicionar evento de tecla Enter para login
+// Evento de tecla Enter
 document.addEventListener('keypress', function (e) {
     if (e.key === 'Enter') {
         const loginScreen = document.getElementById('loginScreen');
@@ -263,10 +250,9 @@ document.addEventListener('keypress', function (e) {
 // Inicializar
 verificarSessao();
 
-// Atualizar dados a cada 30 segundos se estiver logado
+// Auto-refresh a cada 30 segundos
 setInterval(() => {
-    const token = localStorage.getItem('token');
-    if (token && document.getElementById('adminPanel').style.display === 'block') {
+    if (adminEmail && adminPassword && document.getElementById('adminPanel').style.display === 'block') {
         loadStats();
         loadUsers();
         loadJobs();
