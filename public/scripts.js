@@ -64,12 +64,6 @@ function renderUserArea() {
     const isPro = user.plano === 'pro';
     area.innerHTML = `
       <span class="user-badge ${isPro ? 'pro' : 'free'}">${isPro ? '⚡ Pro' : 'Free'}</span>
-      <span class="user-email">${user.email}</span>
-      ${!isPro ? `<button class="btn btn-upgrade" onclick="openUpgradeModal()">Upgrade Pro — R$ 14,90/mês</button>` : ''}
-      <button class="btn btn-outline btn-sm" onclick="logout()">Sair</button>
-    `;
-  } else {
-    area.innerHTML = `
       <button class="btn btn-outline btn-sm" onclick="openAuthModal('login')">Entrar</button>
       <button class="btn btn-primary btn-sm" onclick="openAuthModal('register')">Criar conta</button>
     `;
