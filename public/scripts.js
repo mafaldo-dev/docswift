@@ -63,7 +63,6 @@ function renderUserArea() {
   if (user) {
     const isPro = user.plano === 'pro';
     area.innerHTML = `
-      <span class="user-badge ${isPro ? 'pro' : 'free'}">${isPro ? '⚡ Pro' : 'Free'}</span>
       <button class="btn btn-outline btn-sm" onclick="openAuthModal('login')">Entrar</button>
       <button class="btn btn-primary btn-sm" onclick="openAuthModal('register')">Criar conta</button>
     `;
