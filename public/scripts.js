@@ -173,7 +173,7 @@ async function doLogin() {
     if (!res.ok) { errEl.textContent = data.error || 'Erro ao entrar.'; return; }
     setToken(data.token);
     setUser(data.user);
-    window.location.href = 'dashboard.html';
+    //window.location.href = 'dashboard.html';
     closeModal('authModal');
     renderUserArea();
   } catch (e) {
@@ -199,7 +199,7 @@ async function doRegister() {
     if (!res.ok) { errEl.textContent = data.error || 'Erro ao criar conta.'; return; }
     setToken(data.token);
     setUser(data.user);
-    window.location.href = 'dashboard.html';
+    //window.location.href = 'dashboard.html';
     closeModal('authModal');
     renderUserArea();
   } catch (e) {
