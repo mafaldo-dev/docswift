@@ -261,9 +261,9 @@ uploadArea.addEventListener('click', () => {
   if (!token) {
     openAuthModal('login');
     return;
+  } else {
+    fileInput.click();
   }
-
-  fileInput.click();
 });
 
 fileInput.addEventListener('change', handleFileSelect);
