@@ -169,6 +169,7 @@ async function doLogin() {
       body: JSON.stringify({ email, password })
     });
     const data = await res.json();
+
     if (!res.ok) { errEl.textContent = data.error || 'Erro ao entrar.'; return; }
     setToken(data.token);
     setUser(data.user);

@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DocSwift — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #667eea;
+      --primary-dark: #5a6fd6;
+      --purple: #764ba2;
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --border: #e2e8f0;
+      --text: #1a202c;
+      --text-muted: #718096;
+      --radius: 12px;
+    }
+
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    /* HEADER */
+    .header {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .logo { display: flex; align-items: center; gap: 8px; font-size: 1.2rem; font-weight: 700; color: var(--primary); text-decoration: none; }
+    .logo i { font-size: 1.1rem; }
+    .header-right { display: flex; align-items: center; gap: 12px; }
+    .badge-plano {
+      font-size: 0.75rem; font-weight: 700; padding: 4px 12px;
+      border-radius: 20px; letter-spacing: 0.5px;
+    }
+    .badge-free { background: #e2e8f0; color: #4a5568; }
+    .badge-pro  { background: linear-gradient(135deg, var(--primary), var(--purple)); color: #fff; }
+    .user-email { font-size: 0.85rem; color: var(--text-muted); }
+    .btn-logout {
+      background: none; border: 1px solid var(--border); border-radius: 8px;
+      padding: 6px 14px; font-size: 0.82rem; cursor: pointer; color: var(--text-muted);
+      transition: all 0.2s;
+    }
+    .btn-logout:hover { border-color: var(--danger); color: var(--danger); }
+
+    /* LAYOUT */
+    .container { max-width: 900px; margin: 0 auto; padding: 32px 24px; }
+
+    /* BANNER UPGRADE */
+    .upgrade-banner {
+      background: linear-gradient(135deg, var(--primary), var(--purple));
+      color: #fff; border-radius: var(--radius); padding: 20px 24px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 16px; margin-bottom: 28px; flex-wrap: wrap;
+    }
+    .upgrade-banner h3 { font-size: 1rem; font-weight: 600; }
+    .upgrade-banner p  { font-size: 0.85rem; opacity: 0.85; margin-top: 2px; }
+    .btn-upgrade-banner {
+      background: #fff; color: var(--primary); border: none; border-radius: 8px;
+      padding: 10px 20px; font-weight: 700; font-size: 0.9rem; cursor: pointer;
+      white-space: nowrap; transition: opacity 0.2s;
+    }
+    .btn-upgrade-banner:hover { opacity: 0.9; }
+
+    /* STATS */
+    .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 28px; }
+    .stat-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 20px; text-align: center;
+    }
+    .stat-card .val { font-size: 1.8rem; font-weight: 700; color: var(--primary); }
+    .stat-card .lbl { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; }
+
+    /* CONVERSOR */
+    .section-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+    .section-title i { color: var(--primary); }
+
+    .converter-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 28px; margin-bottom: 32px;
+    }
+
+    .upload-area {
+      border: 2px dashed var(--border); border-radius: 10px; padding: 40px 20px;
+      text-align: center; cursor: pointer; transition: all 0.2s; position: relative;
+    }
+    .upload-area:hover, .upload-area.drag-over { border-color: var(--primary); background: #f0f3ff; }
+    .upload-area input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; }
+    .upload-area i { font-size: 2.5rem; color: var(--primary); margin-bottom: 12px; }
+    .upload-area p { color: var(--text-muted); font-size: 0.9rem; }
+    .upload-area strong { color: var(--text); }
+
+    .file-selected {
+      display: none; align-items: center; gap: 12px;
+      background: #f0f3ff; border-radius: 10px; padding: 14px 18px; margin-top: 12px;
+    }
+    .file-selected.show { display: flex; }
+    .file-selected i { color: var(--primary); font-size: 1.3rem; }
+    .file-selected .fname { font-weight: 500; font-size: 0.9rem; }
+    .file-selected .fsize { font-size: 0.8rem; color: var(--text-muted); }
+    .btn-clear { margin-left: auto; background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 1rem; }
+
+    .format-area { display: none; margin-top: 20px; }
+    .format-area.show { display: block; }
+    .format-label { font-size: 0.85rem; font-weight: 500; color: var(--text-muted); margin-bottom: 10px; }
+    .format-btns { display: flex; flex-wrap: wrap; gap: 8px; }
+    .format-btn {
+      padding: 8px 18px; border: 1.5px solid var(--border); border-radius: 8px;
+      background: none; cursor: pointer; font-size: 0.85rem; font-weight: 600;
+      color: var(--text); transition: all 0.2s;
+    }
+    .format-btn:hover { border-color: var(--primary); color: var(--primary); background: #f0f3ff; }
+
+    .loading-area { display: none; text-align: center; padding: 24px; }
+    .loading-area.show { display: block; }
+    .spinner { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .result-area { display: none; text-align: center; padding: 20px; }
+    .result-area.show { display: flex; align-items: center; gap: 16px; background: #f0fff4; border-radius: 10px; padding: 16px 20px; }
+    .result-area i { font-size: 1.8rem; color: var(--success); }
+    .result-area .result-info { text-align: left; flex: 1; }
+    .result-area .result-info strong { font-size: 0.95rem; }
+    .result-area .result-info p { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
+    .btn-download {
+      background: var(--success); color: #fff; border: none; border-radius: 8px;
+      padding: 10px 20px; font-weight: 600; font-size: 0.85rem; cursor: pointer;
+      display: flex; align-items: center; gap: 6px; text-decoration: none;
+      transition: opacity 0.2s;
+    }
+    .btn-download:hover { opacity: 0.88; }
+
+    /* HISTÓRICO */
+    .historico-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    .historico-empty { text-align: center; padding: 40px; color: var(--text-muted); }
+    .historico-empty i { font-size: 2.5rem; margin-bottom: 12px; opacity: 0.3; }
+
+    .historico-item {
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 20px; border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+    .historico-item:last-child { border-bottom: none; }
+    .historico-item:hover { background: #f8fafc; }
+
+    .hist-icon { width: 38px; height: 38px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
+    .hist-icon.pdf  { background: #fee2e2; color: #ef4444; }
+    .hist-icon.docx { background: #dbeafe; color: #3b82f6; }
+    .hist-icon.txt  { background: #f3f4f6; color: #6b7280; }
+    .hist-icon.html { background: #fef3c7; color: #d97706; }
+    .hist-icon.png,
+    .hist-icon.jpg,
+    .hist-icon.jpeg { background: #ede9fe; color: #7c3aed; }
+
+    .hist-info { flex: 1; min-width: 0; }
+    .hist-info .hist-name { font-size: 0.9rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .hist-info .hist-meta { font-size: 0.78rem; color: var(--text-muted); margin-top: 2px; }
+
+    .hist-expira { font-size: 0.75rem; color: var(--text-muted); white-space: nowrap; }
+    .hist-expira.urgente { color: var(--warning); font-weight: 600; }
+
+    .btn-hist-download {
+      background: var(--primary); color: #fff; border: none; border-radius: 6px;
+      padding: 6px 14px; font-size: 0.8rem; font-weight: 600; cursor: pointer;
+      text-decoration: none; display: inline-flex; align-items: center; gap: 4px;
+      transition: opacity 0.2s;
+    }
+    .btn-hist-download:hover { opacity: 0.85; }
+    .btn-hist-delete {
+      background: none; border: none; color: var(--text-muted); cursor: pointer;
+      padding: 6px 8px; border-radius: 6px; transition: color 0.2s;
+    }
+    .btn-hist-delete:hover { color: var(--danger); }
+
+    .tag-expirado { font-size: 0.75rem; color: var(--text-muted); padding: 4px 10px; }
+
+    /* MODAL UPGRADE */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+      z-index: 9999; align-items: center; justify-content: center; padding: 16px;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal-box {
+      background: #fff; border-radius: 16px; padding: 32px; width: 100%; max-width: 420px;
+      position: relative; box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    }
+    .modal-close { position: absolute; top: 14px; right: 16px; background: none; border: none; font-size: 1.1rem; cursor: pointer; color: #888; }
+    .modal-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 4px; }
+    .modal-sub { color: #666; font-size: 0.9rem; margin-bottom: 18px; }
+    .modal-error { color: var(--danger); font-size: 0.85rem; min-height: 18px; margin-bottom: 8px; }
+    .upgrade-list { list-style: none; margin: 16px 0; }
+    .upgrade-list li { padding: 8px 0; font-size: 0.95rem; border-bottom: 1px solid #f0f0f0; }
+    .upgrade-list li:last-child { border-bottom: none; }
+    .btn-primary-full {
+      width: 100%; padding: 12px; background: linear-gradient(135deg, var(--primary), var(--purple));
+      color: #fff; border: none; border-radius: 10px; font-size: 1rem; font-weight: 700;
+      cursor: pointer; margin-top: 8px; transition: opacity 0.2s;
+    }
+    .btn-primary-full:hover { opacity: 0.9; }
+    .modal-hint { font-size: 0.78rem; color: #999; text-align: center; margin-top: 10px; }
+
+    /* SUCESSO BANNER */
+    .sucesso-banner {
+      position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+      background: linear-gradient(135deg, var(--primary), var(--purple));
+      color: #fff; padding: 14px 28px; border-radius: 30px; font-weight: 600;
+      z-index: 99999; box-shadow: 0 8px 24px rgba(102,126,234,0.4);
+      animation: slideDown 0.4s ease;
+    }
+    @keyframes slideDown { from { top: -60px; opacity: 0; } to { top: 20px; opacity: 1; } }
+
+    @media (max-width: 600px) {
+      .container { padding: 20px 16px; }
+      .upgrade-banner { flex-direction: column; text-align: center; }
+      .hist-expira { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <a href="/" class="logo"><i class="fas fa-bolt"></i> DocSwift</a>
+  <div class="header-right">
+    <span id="badgePlano" class="badge-plano badge-free">Free</span>
+    <span id="userEmail" class="user-email"></span>
+    <button class="btn-logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Sair</button>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- BANNER UPGRADE (só free) -->
+  <div id="upgradeBanner" class="upgrade-banner" style="display:none">
+    <div>
+      <h3>⚡ Desbloqueie o DocSwift Pro</h3>
+      <p>Arquivos até 200MB, conversões ilimitadas e histórico por 48h — por apenas R$ 14,90/mês.</p>
+    </div>
+    <button class="btn-upgrade-banner" onclick="abrirUpgrade()">Assinar Pro</button>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="val" id="statHoje">—</div>
+      <div class="lbl">Conversões hoje</div>
+    </div>
+    <div class="stat-card">
+      <div class="val" id="statLimite">—</div>
+      <div class="lbl">Limite diário</div>
+    </div>
+    <div class="stat-card">
+      <div class="val" id="statMB">—</div>
+      <div class="lbl">Tamanho máximo</div>
+    </div>
+    <div class="stat-card">
+      <div class="val" id="statHistorico">—</div>
+      <div class="lbl">Arquivos recentes</div>
+    </div>
+  </div>
+
+  <!-- CONVERSOR -->
+  <div class="section-title"><i class="fas fa-exchange-alt"></i> Converter arquivo</div>
+  <div class="converter-card">
+    <div class="upload-area" id="uploadArea">
+      <input type="file" id="fileInput" accept=".pdf,.docx,.txt,.jpg,.jpeg,.png">
+      <i class="fas fa-cloud-upload-alt"></i>
+      <p><strong>Clique ou arraste</strong> seu arquivo aqui</p>
+      <p>PDF, DOCX, TXT, JPG, PNG</p>
+    </div>
+
+    <div class="file-selected" id="fileSelected">
+      <i class="fas fa-file-alt"></i>
+      <div>
+        <div class="fname" id="fname"></div>
+        <div class="fsize" id="fsize"></div>
+      </div>
+      <button class="btn-clear" onclick="limparArquivo()"><i class="fas fa-times"></i></button>
+    </div>
+
+    <div class="format-area" id="formatArea">
+      <div class="format-label"><i class="fas fa-arrow-right"></i> Converter para:</div>
+      <div class="format-btns" id="formatBtns"></div>
+    </div>
+
+    <div class="loading-area" id="loadingArea">
+      <div class="spinner"></div>
+      <p style="color:var(--text-muted);font-size:0.9rem">Convertendo e salvando seu arquivo...</p>
+    </div>
+
+    <div class="result-area" id="resultArea">
+      <i class="fas fa-check-circle"></i>
+      <div class="result-info">
+        <strong>Conversão concluída!</strong>
+        <p>Disponível por 48h no seu histórico.</p>
+      </div>
+      <a id="btnDownloadResult" class="btn-download" href="#" target="_blank">
+        <i class="fas fa-download"></i> Baixar
+      </a>
+    </div>
+  </div>
+
+  <!-- HISTÓRICO -->
+  <div class="section-title"><i class="fas fa-clock"></i> Arquivos recentes <span style="font-size:0.75rem;font-weight:400;color:var(--text-muted)">(últimas 48h)</span></div>
+  <div class="historico-card" id="historicoCard">
+    <div class="historico-empty">
+      <i class="fas fa-folder-open"></i>
+      <p>Carregando histórico...</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL UPGRADE -->
+<div class="modal-overlay" id="modalUpgrade">
+  <div class="modal-box">
+    <button class="modal-close" onclick="fecharUpgrade()">✕</button>
+    <div class="modal-title">⚡ DocSwift Pro</div>
+    <div class="modal-sub">Apenas <strong>R$ 14,90/mês</strong></div>
+    <ul class="upgrade-list">
+      <li>✅ Arquivos até <strong>200 MB</strong></li>
+      <li>✅ Conversões <strong>ilimitadas</strong> por dia</li>
+      <li>✅ Histórico de arquivos por 48h</li>
+      <li>✅ Processamento prioritário</li>
+    </ul>
+    <div class="modal-error" id="upgradeError"></div>
+    <button class="btn-primary-full" onclick="iniciarPagamento()">
+      <i class="fas fa-bolt"></i> Assinar Pro — R$ 14,90/mês
+    </button>
+    <p class="modal-hint">Pagamento seguro via Mercado Pago. Cancele quando quiser.</p>
+  </div>
+</div>
+
+<script>
+const API_URL = "https://backend-docswift.onrender.com";
+let currentFile = null;
+let userData    = null;
+
+// ─── AUTH ────────────────────────────────────
+function getToken() { return localStorage.getItem('docswift_token'); }
+function authH()    { return { 'Authorization': `Bearer ${getToken()}` }; }
+
+function logout() {
+  localStorage.removeItem('docswift_token');
+  localStorage.removeItem('docswift_user');
+  window.location.href = '/';
+}
+
+// ─── INIT ────────────────────────────────────
+async function init() {
+  const token = getToken();
+  if (!token) { window.location.href = '/'; return; }
+
+  try {
+    const res  = await fetch(`${API_URL}/auth/me`, { headers: authH() });
+    if (!res.ok) { logout(); return; }
+    userData = await res.json();
+    renderHeader();
+    renderStats();
+    await carregarHistorico();
+
+    // Retorno de pagamento aprovado
+    if (new URLSearchParams(window.location.search).get('upgrade') === 'ok') {
+      mostrarSucesso('⚡ Plano Pro ativado com sucesso!');
+      window.history.replaceState({}, '', '/dashboard');
+    }
+  } catch(e) {
+    logout();
+  }
+}
+
+function renderHeader() {
+  document.getElementById('userEmail').textContent = userData.email;
+  const badge = document.getElementById('badgePlano');
+  if (userData.plano === 'pro') {
+    badge.textContent = '⚡ Pro';
+    badge.className   = 'badge-plano badge-pro';
+    document.getElementById('upgradeBanner').style.display = 'none';
+  } else {
+    badge.textContent = 'Free';
+    badge.className   = 'badge-plano badge-free';
+    document.getElementById('upgradeBanner').style.display = 'flex';
+  }
+}
+
+function renderStats() {
+  document.getElementById('statHoje').textContent     = userData.conversoes_hoje ?? '0';
+  document.getElementById('statLimite').textContent   = userData.limite_diario ?? '∞';
+  document.getElementById('statMB').textContent       = (userData.limite_arquivo_mb ?? 10) + 'MB';
+}
+
+// ─── UPLOAD ──────────────────────────────────
+document.getElementById('uploadArea').addEventListener('click', () => document.getElementById('fileInput').click());
+document.getElementById('fileInput').addEventListener('change', e => { if (e.target.files[0]) selecionarArquivo(e.target.files[0]); });
+
+const uploadArea = document.getElementById('uploadArea');
+uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.classList.add('drag-over'); });
+uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('drag-over'));
+uploadArea.addEventListener('drop', e => {
+  e.preventDefault(); uploadArea.classList.remove('drag-over');
+  if (e.dataTransfer.files[0]) selecionarArquivo(e.dataTransfer.files[0]);
+});
+
+function selecionarArquivo(file) {
+  currentFile = file;
+  document.getElementById('fname').textContent = file.name;
+  document.getElementById('fsize').textContent = (file.size / 1024).toFixed(1) + ' KB';
+  document.getElementById('fileSelected').classList.add('show');
+  document.getElementById('resultArea').classList.remove('show');
+  mostrarFormatos(file);
+}
+
+function limparArquivo() {
+  currentFile = null;
+  document.getElementById('fileSelected').classList.remove('show');
+  document.getElementById('formatArea').classList.remove('show');
+  document.getElementById('resultArea').classList.remove('show');
+  document.getElementById('fileInput').value = '';
+}
+
+function mostrarFormatos(file) {
+  const ext = file.name.split('.').pop().toLowerCase();
+  const mapa = {
+    pdf: ['txt','docx','html'], docx: ['pdf','txt','html'],
+    txt: ['pdf','docx','html'], jpg: ['pdf'], jpeg: ['pdf'], png: ['pdf']
+  };
+  const fmts = mapa[ext] || [];
+  const btns = document.getElementById('formatBtns');
+  btns.innerHTML = '';
+  fmts.forEach(f => {
+    const b = document.createElement('button');
+    b.className   = 'format-btn';
+    b.textContent = f.toUpperCase();
+    b.onclick     = () => converter(f);
+    btns.appendChild(b);
+  });
+  document.getElementById('formatArea').classList.add('show');
+}
+
+// ─── CONVERSÃO ───────────────────────────────
+async function converter(formato) {
+  document.getElementById('loadingArea').classList.add('show');
+  document.getElementById('resultArea').classList.remove('show');
+  document.getElementById('formatArea').classList.remove('show');
+
+  try {
+    const fd = new FormData();
+    fd.append('file', currentFile);
+    fd.append('format', formato);
+
+    const res  = await fetch(`${API_URL}/convert`, { method: 'POST', headers: authH(), body: fd });
+    const data = await res.json();
+
+    if (res.status === 403 && data.upgrade) {
+      document.getElementById('loadingArea').classList.remove('show');
+      document.getElementById('formatArea').classList.add('show');
+      abrirUpgrade();
+      return;
+    }
+
+    if (!data.success) throw new Error(data.error || 'Erro na conversão');
+
+    // Mostra resultado
+    const link = document.getElementById('btnDownloadResult');
+    link.href = data.download_url;
+    link.download = `convertido.${formato}`;
+    document.getElementById('resultArea').classList.add('show');
+
+    // Atualiza stats e histórico
+    userData.conversoes_hoje = (userData.conversoes_hoje || 0) + 1;
+    renderStats();
+    await carregarHistorico();
+
+  } catch(e) {
+    alert('Erro: ' + e.message);
+    document.getElementById('formatArea').classList.add('show');
+  } finally {
+    document.getElementById('loadingArea').classList.remove('show');
+  }
+}
+
+// ─── HISTÓRICO ───────────────────────────────
+async function carregarHistorico() {
+  try {
+    const res  = await fetch(`${API_URL}/historico`, { headers: authH() });
+    const data = await res.json();
+    renderHistorico(data.historico || []);
+    document.getElementById('statHistorico').textContent = (data.historico || []).length;
+  } catch(e) {
+    console.error('Erro ao carregar histórico:', e);
+  }
+}
+
+function renderHistorico(items) {
+  const card = document.getElementById('historicoCard');
+  if (!items.length) {
+    card.innerHTML = `<div class="historico-empty">
+      <i class="fas fa-folder-open"></i>
+      <p>Nenhum arquivo recente. Converta algo acima!</p>
+    </div>`;
+    return;
+  }
+
+  const icones = { pdf:'fa-file-pdf pdf', docx:'fa-file-word docx', txt:'fa-file-alt txt', html:'fa-file-code html', jpg:'fa-image jpg', jpeg:'fa-image jpeg', png:'fa-image png' };
+
+  card.innerHTML = items.map(j => {
+    const expiraEm  = new Date(j.expira_em);
+    const agora     = new Date();
+    const diffH     = Math.max(0, Math.round((expiraEm - agora) / 36e5));
+    const urgente   = diffH <= 6;
+    const expiraStr = j.expirado ? 'Expirado' : `Expira em ${diffH}h`;
+    const ico       = icones[j.output_fmt] || 'fa-file txt';
+    const tamanho   = j.file_size ? (j.file_size / 1024).toFixed(0) + ' KB' : '';
+
+    return `
+    <div class="historico-item" id="job-${j.id}">
+      <div class="hist-icon ${j.output_fmt}"><i class="fas ${ico.split(' ')[0]}"></i></div>
+      <div class="hist-info">
+        <div class="hist-name">${j.original_name || 'arquivo'} → ${(j.output_fmt||'').toUpperCase()}</div>
+        <div class="hist-meta">${tamanho} • ${new Date(j.criado_em).toLocaleString('pt-BR')}</div>
+      </div>
+      <div class="hist-expira ${urgente ? 'urgente' : ''}">${expiraStr}</div>
+      ${j.expirado || !j.download_url
+        ? `<span class="tag-expirado">Expirado</span>`
+        : `<a class="btn-hist-download" href="${j.download_url}" target="_blank"><i class="fas fa-download"></i> Baixar</a>`
+      }
+      <button class="btn-hist-delete" onclick="deletarJob('${j.id}')" title="Remover"><i class="fas fa-trash"></i></button>
+    </div>`;
+  }).join('');
+}
+
+async function deletarJob(id) {
+  if (!confirm('Remover este arquivo do histórico?')) return;
+  try {
+    await fetch(`${API_URL}/historico/${id}`, { method: 'DELETE', headers: authH() });
+    document.getElementById(`job-${id}`)?.remove();
+    const atual = parseInt(document.getElementById('statHistorico').textContent) || 0;
+    document.getElementById('statHistorico').textContent = Math.max(0, atual - 1);
+  } catch(e) {
+    alert('Erro ao remover arquivo.');
+  }
+}
+
+// ─── UPGRADE ─────────────────────────────────
+function abrirUpgrade()  { document.getElementById('modalUpgrade').classList.add('show'); }
+function fecharUpgrade() { document.getElementById('modalUpgrade').classList.remove('show'); }
+
+document.getElementById('modalUpgrade').addEventListener('click', e => {
+  if (e.target === document.getElementById('modalUpgrade')) fecharUpgrade();
+});
+
+async function iniciarPagamento() {
+  const errEl = document.getElementById('upgradeError');
+  errEl.textContent = '';
+  try {
+    const res  = await fetch(`${API_URL}/pagamento/criar`, { method: 'POST', headers: { ...authH(), 'Content-Type': 'application/json' } });
+    const data = await res.json();
+    if (!res.ok) { errEl.textContent = data.error || 'Erro ao iniciar pagamento.'; return; }
+    window.location.href = data.checkout_url;
+  } catch(e) {
+    errEl.textContent = 'Erro de conexão.';
+  }
+}
+
+function mostrarSucesso(msg) {
+  const b = document.createElement('div');
+  b.className   = 'sucesso-banner';
+  b.textContent = msg;
+  document.body.appendChild(b);
+  setTimeout(() => b.remove(), 5000);
+}
+
+// ─── START ───────────────────────────────────
+init();
+</script>
+</body>
+</html>
