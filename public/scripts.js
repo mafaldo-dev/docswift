@@ -173,7 +173,6 @@ async function doLogin() {
     if (!res.ok) { errEl.textContent = data.error || 'Erro ao entrar.'; return; }
     setToken(data.token);
     setUser(data.user);
-    //window.location.href = 'dashboard.html';
     closeModal('authModal');
     renderUserArea();
   } catch (e) {
@@ -199,7 +198,6 @@ async function doRegister() {
     if (!res.ok) { errEl.textContent = data.error || 'Erro ao criar conta.'; return; }
     setToken(data.token);
     setUser(data.user);
-    //window.location.href = 'dashboard.html';
     closeModal('authModal');
     renderUserArea();
   } catch (e) {
@@ -262,17 +260,7 @@ async function iniciarPagamento() {
 // ─────────────────────────────────────────────
 // UPLOAD
 // ─────────────────────────────────────────────
-uploadArea.addEventListener('click', () => {
-  const token = getToken();
-
-  if (!token) {
-    openAuthModal('login');
-    return;
-  }
-
-  fileInput.click();
-});
-
+uploadArea.addEventListener('click', () => fileInput.click());
 fileInput.addEventListener('change', handleFileSelect);
 
 uploadArea.addEventListener('dragover', (e) => {
@@ -283,15 +271,7 @@ uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('drag
 uploadArea.addEventListener('drop', (e) => {
   e.preventDefault();
   uploadArea.classList.remove('drag-over');
-
-  if (!getToken()) {
-    openAuthModal('login');
-    return;
-  }
-
-  if (e.dataTransfer.files.length > 0) {
-    handleFile(e.dataTransfer.files[0]);
-  }
+  if (e.dataTransfer.files.length > 0) handleFile(e.dataTransfer.files[0]);
 });
 
 if (clearFile) {
