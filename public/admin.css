@@ -1,0 +1,134 @@
+/* ===== RESET ===== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #0f172a;
+    color: #ffffff;
+    font-family: Arial, Helvetica, sans-serif;
+    min-height: 100vh;
+}
+
+/* ===== CONTAINER ===== */
+
+.container {
+    width: 95%;
+    max-width: 1400px;
+    margin: 40px auto;
+}
+
+h1 {
+    margin-bottom: 30px;
+    color: #60a5fa;
+}
+
+h2 {
+    margin: 40px 0 20px;
+    color: #cbd5e1;
+}
+
+/* ===== CARDS ===== */
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    padding: 25px;
+    transition: 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+}
+
+.card h3 {
+    color: #94a3b8;
+    font-size: 15px;
+    margin-bottom: 10px;
+}
+
+.card span {
+    font-size: 32px;
+    font-weight: bold;
+    color: #60a5fa;
+}
+
+/* ===== TABELAS ===== */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #1e293b;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+thead {
+    background: #2563eb;
+}
+
+thead th {
+    padding: 15px;
+    text-align: left;
+    color: white;
+    font-weight: 600;
+}
+
+tbody tr {
+    border-bottom: 1px solid #334155;
+}
+
+tbody tr:hover {
+    background: #273549;
+}
+
+tbody td {
+    padding: 14px;
+    color: #e2e8f0;
+    font-size: 14px;
+}
+
+/* ===== SCROLL TABELAS ===== */
+
+.table-wrapper {
+    overflow-x: auto;
+}
+
+/* ===== STATUS ===== */
+
+.status-success {
+    color: #22c55e;
+    font-weight: bold;
+}
+
+.status-error {
+    color: #ef4444;
+    font-weight: bold;
+}
+
+/* ===== RESPONSIVO ===== */
+
+@media (max-width: 768px) {
+
+    .container {
+        width: 98%;
+    }
+
+    .card span {
+        font-size: 24px;
+    }
+
+    table {
+        font-size: 12px;
+    }
+}
