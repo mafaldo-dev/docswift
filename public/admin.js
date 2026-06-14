@@ -1,11 +1,10 @@
 
 const API_URL = "https://backend-docswift.onrender.com";
-
-// Guarda as credenciais após o login
 let adminEmail = null;
 let adminPassword = null;
+let conversionChart = null;
+let userDistributionChart = null;
 
-// Função para fazer requisições autenticadas
 async function fetchAdmin(endpoint, options = {}) {
     const response = await fetch(`${API_URL}${endpoint}`, {
         ...options,
@@ -17,16 +16,14 @@ async function fetchAdmin(endpoint, options = {}) {
         }
     });
 
-    // Se não autorizado, fazer logout
     if (response.status === 403 || response.status === 401) {
         logoutAdmin();
-        throw new Error('Sessão expirada');
+        throw new Error('Session expired');
     }
 
     return response;
 }
 
-// Login
 async function fazerLogin() {
     const email = document.getElementById('loginEmail').value;
     const password = document.getElementById('loginPassword').value;
@@ -34,101 +31,86 @@ async function fazerLogin() {
     const loginBtn = document.querySelector('.login-btn');
 
     if (!email || !password) {
-        errorDiv.textContent = '❌ Por favor, preencha todos os campos!';
+        errorDiv.textContent = '❌ Please fill in all fields!';
         errorDiv.style.display = 'block';
         return;
     }
 
     loginBtn.disabled = true;
-    loginBtn.textContent = 'Entrando...';
+    loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing In...';
 
     try {
         const response = await fetch(`${API_URL}/admin/login`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                email: email,
-                password: password
-            })
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
         });
 
         const data = await response.json();
 
         if (response.ok && data.success === true) {
-            // Salvar credenciais para próximas requisições
             adminEmail = email;
             adminPassword = password;
 
             localStorage.setItem('admin_logged_in', 'true');
             localStorage.setItem('admin_email', email);
-            localStorage.setItem('admin_password', btoa(password)); // Armazena em base64
+            localStorage.setItem('admin_password', btoa(password));
 
-            mostrarPainelAdmin();
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
             errorDiv.style.display = 'none';
 
-            await Promise.all([
-                loadStats(),
-                loadUsers(),
-                loadJobs()
-            ]);
+            await loadAllData();
+            initCharts();
         } else {
-            errorDiv.textContent = data.error || '❌ Email ou senha incorretos!';
+            errorDiv.textContent = data.error || '❌ Invalid credentials!';
             errorDiv.style.display = 'block';
         }
     } catch (error) {
-        console.error('Erro no login:', error);
-        errorDiv.textContent = '❌ Erro ao conectar com o servidor. Tente novamente.';
+        console.error('Login error:', error);
+        errorDiv.textContent = '❌ Connection error. Please try again.';
         errorDiv.style.display = 'block';
     } finally {
         loginBtn.disabled = false;
-        loginBtn.textContent = 'Entrar no Painel';
+        loginBtn.innerHTML = '<i class="fas fa-arrow-right"></i> Sign In';
     }
 }
 
-// Logout
 function logoutAdmin() {
     adminEmail = null;
     adminPassword = null;
     localStorage.removeItem('admin_logged_in');
     localStorage.removeItem('admin_email');
     localStorage.removeItem('admin_password');
-    mostrarTelaLogin();
-}
-
-function mostrarPainelAdmin() {
-    document.getElementById('loginScreen').style.display = 'none';
-    document.getElementById('adminPanel').style.display = 'block';
-}
-
-function mostrarTelaLogin() {
     document.getElementById('loginScreen').style.display = 'flex';
-    document.getElementById('adminPanel').style.display = 'none';
-    document.getElementById('loginEmail').value = '';
-    document.getElementById('loginPassword').value = '';
+    document.getElementById('dashboard').style.display = 'none';
 }
 
-// Carregar estatísticas
+async function loadAllData() {
+    await Promise.all([
+        loadStats(),
+        loadUsers(),
+        loadJobs()
+    ]);
+}
+
 async function loadStats() {
     try {
         const response = await fetchAdmin('/admin/stats');
         const data = await response.json();
 
-        document.getElementById("usuariosTotal").textContent = data.usuarios_total || 0;
-        document.getElementById("usuariosPro").textContent = data.usuarios_pro || 0;
-        document.getElementById("usuariosFree").textContent = data.usuarios_free || 0;
-        document.getElementById("conversoesTotal").textContent = data.conversoes_total || 0;
-        document.getElementById("conversoesHoje").textContent = data.conversoes_hoje || 0;
+        document.getElementById("usuariosTotal").textContent = (data.usuarios_total || 0).toLocaleString();
+        document.getElementById("usuariosPro").textContent = (data.usuarios_pro || 0).toLocaleString();
+        document.getElementById("conversoesTotal").textContent = (data.conversoes_total || 0).toLocaleString();
+        document.getElementById("conversoesHoje").textContent = (data.conversoes_hoje || 0).toLocaleString();
     } catch (error) {
-        console.error('Erro ao carregar stats:', error);
+        console.error('Error loading stats:', error);
     }
 }
 
-// Carregar usuários
 async function loadUsers() {
     const tbody = document.querySelector("#usersTable tbody");
-    tbody.innerHTML = '<tr><td colspan="4" class="loading">Carregando usuários...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 60px;"><div class="skeleton" style="width: 100%; height: 20px;"></div></td></tr>';
 
     try {
         const response = await fetchAdmin('/admin/users');
@@ -137,31 +119,28 @@ async function loadUsers() {
         tbody.innerHTML = '';
 
         if (!users || users.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="4" style="text-align: center;">Nenhum usuário encontrado</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 60px;">No users found</td></tr>';
             return;
         }
 
         users.forEach(user => {
             const row = tbody.insertRow();
-            const planoColor = user.plano === 'pro' ? '#48bb78' : '#ed8936';
-            const planoTexto = user.plano === 'pro' ? 'Pro' : 'Free';
             row.innerHTML = `
                         <td>${user.id || 'N/A'}</td>
                         <td>${user.email || 'N/A'}</td>
-                        <td><span style="color: ${planoColor}; font-weight: bold;">${planoTexto}</span></td>
+                        <td><span class="badge ${user.plano === 'pro' ? 'badge-pro' : 'badge-free'}">${user.plano === 'pro' ? 'PRO' : 'FREE'}</span></td>
                         <td>${user.criado_em ? new Date(user.criado_em).toLocaleString() : 'N/A'}</td>
                     `;
         });
     } catch (error) {
-        console.error('Erro ao carregar usuários:', error);
-        tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #f56565;">Erro ao carregar usuários</td></tr>';
+        console.error('Error loading users:', error);
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 60px; color: #dc2626;">Error loading users</td></tr>';
     }
 }
 
-// Carregar jobs
 async function loadJobs() {
     const tbody = document.querySelector("#jobsTable tbody");
-    tbody.innerHTML = '<tr><td colspan="9" class="loading">Carregando conversões...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 60px;"><div class="skeleton" style="width: 100%; height: 20px;"></div></td></tr>';
 
     try {
         const response = await fetchAdmin('/admin/jobs');
@@ -170,7 +149,7 @@ async function loadJobs() {
         tbody.innerHTML = '';
 
         if (!jobs || jobs.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">Nenhuma conversão encontrada</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 60px;">No conversions found</td></tr>';
             return;
         }
 
@@ -180,40 +159,106 @@ async function loadJobs() {
                 `${(job.tamanho_original / 1024 / 1024).toFixed(2)} MB` : 'N/A';
 
             let statusClass = '';
-            let statusTexto = job.status || 'pending';
+            let statusText = '';
 
-            if (statusTexto === 'done') {
-                statusClass = 'status-success';
-                statusTexto = 'Concluído';
-            } else if (statusTexto === 'processing') {
-                statusClass = 'status-pending';
-                statusTexto = 'Processando';
-            } else if (statusTexto === 'error') {
-                statusClass = 'status-failed';
-                statusTexto = 'Erro';
+            if (job.status === 'done') {
+                statusClass = 'badge-success';
+                statusText = 'Completed';
+            } else if (job.status === 'processing') {
+                statusClass = 'badge-warning';
+                statusText = 'Processing';
             } else {
-                statusTexto = statusTexto;
+                statusClass = 'badge-error';
+                statusText = 'Failed';
             }
 
             row.innerHTML = `
-                        <td>${job.id || 'N/A'}</td>
                         <td>${job.usuario || 'N/A'}</td>
                         <td>${job.arquivo || 'N/A'}</td>
-                        <td>${job.entrada || 'N/A'}</td>
-                        <td>${job.saida || 'N/A'}</td>
+                        <td>${job.entrada?.toUpperCase() || 'N/A'}</td>
+                        <td>${job.saida?.toUpperCase() || 'N/A'}</td>
                         <td>${tamanhoFormatado}</td>
-                        <td class="${statusClass}">${statusTexto}</td>
+                        <td><span class="badge ${statusClass}">${statusText}</span></td>
                         <td>${job.ip || 'N/A'}</td>
                         <td>${job.data ? new Date(job.data).toLocaleString() : 'N/A'}</td>
                     `;
         });
     } catch (error) {
-        console.error('Erro ao carregar jobs:', error);
-        tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; color: #f56565;">Erro ao carregar conversões</td></tr>';
+        console.error('Error loading jobs:', error);
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 60px; color: #dc2626;">Error loading conversions</td></tr>';
     }
 }
 
-// Verificar sessão ao carregar
+function initCharts() {
+    const ctx1 = document.getElementById('conversionChart').getContext('2d');
+    const ctx2 = document.getElementById('userDistributionChart').getContext('2d');
+
+    conversionChart = new Chart(ctx1, {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            datasets: [{
+                label: 'Conversions',
+                data: [65, 78, 82, 91, 105, 120],
+                borderColor: '#667eea',
+                backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                borderWidth: 3,
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        }
+    });
+
+    userDistributionChart = new Chart(ctx2, {
+        type: 'doughnut',
+        data: {
+            labels: ['Pro Plan', 'Free Plan'],
+            datasets: [{
+                data: [30, 70],
+                backgroundColor: ['#667eea', '#e5e7eb'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+}
+
+function showSection(section) {
+    document.getElementById('overviewSection').style.display = 'none';
+    document.getElementById('usersSection').style.display = 'none';
+    document.getElementById('conversionsSection').style.display = 'none';
+
+    if (section === 'overview') {
+        document.getElementById('overviewSection').style.display = 'block';
+    } else if (section === 'users') {
+        document.getElementById('usersSection').style.display = 'block';
+    } else if (section === 'conversions') {
+        document.getElementById('conversionsSection').style.display = 'block';
+    }
+
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    event.currentTarget.classList.add('active');
+}
+
 async function verificarSessao() {
     const isLoggedIn = localStorage.getItem('admin_logged_in');
     const storedEmail = localStorage.getItem('admin_email');
@@ -225,36 +270,28 @@ async function verificarSessao() {
 
         try {
             await fetchAdmin('/admin/stats');
-            mostrarPainelAdmin();
-            await Promise.all([
-                loadStats(),
-                loadUsers(),
-                loadJobs()
-            ]);
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+            await loadAllData();
+            initCharts();
         } catch (error) {
             logoutAdmin();
         }
     }
 }
 
-// Evento de tecla Enter
 document.addEventListener('keypress', function (e) {
     if (e.key === 'Enter') {
-        const loginScreen = document.getElementById('loginScreen');
-        if (loginScreen.style.display !== 'none') {
+        if (document.getElementById('loginScreen').style.display !== 'none') {
             fazerLogin();
         }
     }
 });
 
-// Inicializar
 verificarSessao();
 
-// Auto-refresh a cada 30 segundos
 setInterval(() => {
-    if (adminEmail && adminPassword && document.getElementById('adminPanel').style.display === 'block') {
+    if (adminEmail && adminPassword && document.getElementById('dashboard').style.display === 'block') {
         loadStats();
-        loadUsers();
-        loadJobs();
     }
 }, 30000);
