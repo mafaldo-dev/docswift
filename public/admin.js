@@ -28,6 +28,9 @@ async function loadUsers() {
 
     const users = await res.json();
 
+    console.log(users);
+    console.log(res.status);
+
     const tbody = document.querySelector("#usersTable tbody");
 
     users.forEach(user => {
@@ -51,6 +54,9 @@ async function loadJobs() {
     });
 
     const jobs = await res.json();
+
+    console.log(jobs);
+    console.log(res.status);
 
     const tbody = document.querySelector("#jobsTable tbody");
 
