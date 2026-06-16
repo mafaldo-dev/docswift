@@ -54,7 +54,7 @@ async function fazerLogin() {
 
             localStorage.setItem('admin_logged_in', 'true');
             localStorage.setItem('admin_email', email);
-            localStorage.setItem('admin_password', btoa(password));
+           // localStorage.setItem('admin_password', btoa(password));
 
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('dashboard').style.display = 'block';
